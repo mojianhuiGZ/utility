@@ -16,11 +16,11 @@
 namespace utils {
 
     enum {
-        LOG_VERBOSE = 0,
-        LOG_DEBUG,
-        LOG_INFO,
+        LOG_ERROR = 0,
         LOG_WARN,
-        LOG_ERROR
+        LOG_INFO,
+        LOG_DEBUG,
+        LOG_VERBOSE,
     };
 
     class ILogFormatter {

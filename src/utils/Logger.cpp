@@ -118,13 +118,6 @@ void Logger::log(uint32_t level, const char *tag, const char *format, va_list ar
     }
 }
 
-//void Logger::log(uint32_t level, const char *tag, const char *format, ...) {
-//    va_list args;
-//    va_start(args, format);
-//    log(level, tag, format, args);
-//    va_end(args);
-//}
-
 ///////////////////////////////////////////////////////////////////////////////
 // Others
 ///////////////////////////////////////////////////////////////////////////////
