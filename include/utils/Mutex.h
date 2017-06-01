@@ -1,37 +1,64 @@
 #ifndef _UTILS_MUTEX_H
 #define _UTILS_MUTEX_H
 
+#include <zconf.h>
+
 namespace utils {
     class Mutex {
     public:
         Mutex();
+
         explicit Mutex(const char *name);
+
         ~Mutex();
-        int lock();
+
+        status_t lock();
+
         void unlock();
-        int trylock();
-        int timedLock();
+
+        status_t trylock();
 
         class AutoLock {
         public:
-            inline explicit AutoLock(Mutex& mutex);
-            inline explicit AutoLock(Mutex* mutex);
-            inline ~AutoLock() {}
-        private:
-            Mutex& Lock;
-        };
-    private:
-        Mutex(const Mutex&);
-        Mutex& operator=(const Mutex&);
+            inline explicit AutoLock(Mutex &mutex) : mLock(mutex) { mLock.lock(); }
 
-#if !define(_WIN32)
-#endif
+            inline explicit AutoLock(Mutex *mutex) : mLock(*mutex) { mLock.lock(); }
+
+            inline ~AutoLock() { mLock.unlock(); }
+
+        private:
+            Mutex &mLock;
+        };
+
+    private:
+        Mutex(const Mutex &);
+
+        Mutex &operator=(const Mutex &);
+
+        pthread_mutex_t mMutex;
+
     };
 }
 
-#if defined(HAVE_PTHREADS)
 inline Mutex::Mutex() {
+    pthread_mutex_init(&mMutex, NULL);
 }
-#endif
+inline Mutex::Mutex(__attribute__((unused)) const char *name) {
+
+}
+inline Mutex::~Mutex() {
+
+}
+inline status_t Mutex::lock() {
+
+}
+inline void Mutex::unlock() {
+
+}
+inline status_t Mutex::tryLock() {
+
+}
+
+typedef Mutex::AutoLock AutoMutex;
 
 #endif //_UTILS_MUTEX_H

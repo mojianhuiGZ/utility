@@ -23,6 +23,11 @@ find_program(MEMORYCHECK_COMMAND valgrind)
 set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full")
 set(MEMORYCHECK_SUPPRESSIONS_FILE "${PROJECT_SOURCE_DIR}/valgrind_suppress.txt")
 
+set(CMAKE_REQUIRED_INCLUDES /usr /usr/include)
+include(${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
+check_include_file("pthread.h" HAVE_PTHREAD)
+message(WARNING "${THREADS_HAVE_PTHREAD_ARG}")
+
 configure_file(
         "${INCLUDE_DIR}/config.h.in"
         "${INCLUDE_DIR}/config.h"
