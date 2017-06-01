@@ -8,15 +8,25 @@ namespace utils {
     class Singleton {
     public:
         static T &getInstance() {
-
-
+            Mutex::AutoLock _l(sLock);
+            T *instance = sInstance;
+            if (instance == nullptr) {
+                instance = new T();
+                sInstance = instance;
+            }
+            return *instance;
         }
 
         static bool hasInstance() {
-
+            Mutex::AutoLock _l(sLock);
+            return sInstance != nullptr;
         }
 
     private:
+        Singleton() {}
+
+        ~Singleton() {}
+
         Singleton(const Singleton &);
 
         Singleton &operator=(const Singleton &);
@@ -25,5 +35,9 @@ namespace utils {
         static T *sInstance;
     };
 }
+
+#define SINGLETON_STATIC_INSTANCE(T) \
+    ::utils::Mutex ::utils::Singleton<T>::sLock(); \
+    T* ::utils::Singleton<T>::sInstance(nullptr);
 
 #endif //_UTILS_SINGLETON_H
