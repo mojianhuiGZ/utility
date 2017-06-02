@@ -23,10 +23,11 @@ find_program(MEMORYCHECK_COMMAND valgrind)
 set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full")
 set(MEMORYCHECK_SUPPRESSIONS_FILE "${PROJECT_SOURCE_DIR}/valgrind_suppress.txt")
 
-set(CMAKE_REQUIRED_INCLUDES /usr /usr/include)
+set(CMAKE_REQUIRED_INCLUDES /usr/include)
 include(${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
+
+unset(HAVE_PTHREAD)
 check_include_file("pthread.h" HAVE_PTHREAD)
-message(WARNING "${THREADS_HAVE_PTHREAD_ARG}")
 
 configure_file(
         "${INCLUDE_DIR}/config.h.in"
@@ -37,10 +38,10 @@ include_directories(${GTEST_DIR}/include)
 add_subdirectory(${GTEST_DIR})
 
 include_directories(${INCLUDE_DIR})
-add_library(${PROJECT_NAME} src/utils/Logger.cpp)
+add_library(${PROJECT_NAME} src/utils/Logger.cpp include/utils/Errors.h src/utils/Timers.cpp)
 
 add_executable(UnitTests test/utils/DynamicList_test.cpp test/utils/String_test.cpp
-        test/utils/List_test.cpp test/utils/Logger_test.cpp)
+        test/utils/List_test.cpp test/utils/Logger_test.cpp test/utils/Singleton_test.cpp test/utils/Mutex_test.cpp)
 target_link_libraries(UnitTests ${PROJECT_NAME} gtest gtest_main pthread)
 
 enable_testing()

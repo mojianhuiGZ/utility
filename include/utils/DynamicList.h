@@ -70,6 +70,7 @@ namespace utils {
 
             friend class DynamicList;
         };
+
     public:
         typedef _Iterator<T> Iterator;
 
@@ -82,8 +83,7 @@ namespace utils {
         uint32_t size() {
             uint32_t n = 0;
             ListNode *node;
-            ForeachListNode(node, &mHead)
-                n++;
+            ForeachListNode(node, &mHead)n++;
             return n;
         }
 

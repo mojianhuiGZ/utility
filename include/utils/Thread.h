@@ -5,12 +5,19 @@ namespace utils {
     class Thread {
     public:
         Thread();
+
         ~Thread();
+
         run();
+
         requestExit();
+
         readyToRun();
+
         requestExitAndWait();
+
         join();
+
         isRunning();
 
     private:

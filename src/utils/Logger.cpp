@@ -3,12 +3,7 @@
 #include <cerrno>
 #include "utils/Logger.h"
 
-using utils::String;
-using utils::Logger;
-using utils::ILogFormatter;
-using utils::ILogHandler;
-using utils::NormalLogFormatter;
-using utils::FileLogHandler;
+using namespace utils;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ILogHandler

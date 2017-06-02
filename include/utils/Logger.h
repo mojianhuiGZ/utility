@@ -51,6 +51,7 @@ namespace utils {
         FileLogHandler(uint32_t fd);
 
         FileLogHandler(const char *filePath, uint32_t fileMode);
+
     private:
         char *mFilePath;
         uint32_t mFileMode;
@@ -70,6 +71,7 @@ namespace utils {
         Logger *addFileHandler(uint32_t fd);
 
         Logger *addFileHandler(const char *filePath, uint32_t fileMode);
+
     private:
         static Logger *mInstance;
         ILogFormatter *mFormatter;

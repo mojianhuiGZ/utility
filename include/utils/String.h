@@ -20,44 +20,54 @@ namespace utils {
             mBuffer = data;
             terminate();
         }
-        String& operator=(const String& str) {
+
+        String &operator=(const String &str) {
             strncpy(mBuffer, str.mBuffer, mCapacity);
-            mLen = (str.mLen >= mCapacity)? (mCapacity - 1): str.mLen;
+            mLen = (str.mLen >= mCapacity) ? (mCapacity - 1) : str.mLen;
             terminate();
             return *this;
         }
-        String& operator=(const char *s) {
+
+        String &operator=(const char *s) {
             strncpy(mBuffer, s, mCapacity);
             terminateAtBufferEnd();
             mLen = strlen(mBuffer);
             return *this;
         }
-        bool operator==(const String& str) {
+
+        bool operator==(const String &str) {
             return (mLen == str.mLen) && ((mLen == 0) || (strncmp(mBuffer, str.mBuffer, mLen) == 0));
         }
+
         bool operator==(const char *s) {
             return (strcmp(mBuffer, s) == 0);
         }
-        bool operator!=(const String& str) {
+
+        bool operator!=(const String &str) {
             return (mLen != str.mLen) || ((mLen != 0) && (strncmp(mBuffer, str.mBuffer, mLen) != 0));
         }
+
         bool operator!=(const char *s) {
             return (strcmp(mBuffer, s) != 0);
         }
-        bool isStartWith(const String& str) {
+
+        bool isStartWith(const String &str) {
             if ((str.mLen == 0) || (mLen < str.mLen))
                 return false;
             return (strncmp(mBuffer, str.mBuffer, str.mLen) == 0);
         }
+
         bool isStartWith(const char *s) {
             return (strncmp(mBuffer, s, strlen(s)) == 0);
         }
-        bool isEndWith(const String& str) {
+
+        bool isEndWith(const String &str) {
             if ((str.mLen == 0) || (mLen < str.mLen))
                 return false;
             return (strncmp(mBuffer + mLen - str.mLen, str.mBuffer, str.mLen) == 0);
         }
-        uint32_t append(const String& str) {
+
+        uint32_t append(const String &str) {
             if (str.mLen == 0) return 0;
             uint32_t oldLen = mLen;
             strncpy(mBuffer + mLen, str.mBuffer, mCapacity - mLen);
@@ -70,6 +80,7 @@ namespace utils {
             terminate();
             return mLen - oldLen;
         }
+
         uint32_t append(const char *format, va_list args) {
             int oldLen = mLen;
             int nChars = vsnprintf(mBuffer + mLen, mCapacity - mLen, format, args);
@@ -85,6 +96,7 @@ namespace utils {
             }
             return mLen - oldLen;
         }
+
         uint32_t append(const char *format, ...) {
             va_list args;
             va_start(args, format);
@@ -92,10 +104,15 @@ namespace utils {
             va_end(args);
             return nChars;
         }
+
         char *toCStyle() const { return mBuffer; }
+
         uint32_t length() { return mLen; }
+
         uint32_t capacity() { return mCapacity; }
+
         ~String() {}
+
     private:
         const char *LOG_TAG = "String";
         uint32_t mCapacity;
@@ -103,6 +120,7 @@ namespace utils {
         char *mBuffer;
 
         void terminate() { mBuffer[mLen] = '\0'; }
+
         void terminateAtBufferEnd() { mBuffer[mCapacity - 1] = '\0'; }
     };
 }

@@ -22,10 +22,12 @@ namespace utils {
             return sInstance != nullptr;
         }
 
-    private:
+    protected:
         Singleton() {}
 
         ~Singleton() {}
+
+    private:
 
         Singleton(const Singleton &);
 
@@ -37,7 +39,7 @@ namespace utils {
 }
 
 #define SINGLETON_STATIC_INSTANCE(T) \
-    ::utils::Mutex ::utils::Singleton<T>::sLock(); \
-    T* ::utils::Singleton<T>::sInstance(nullptr);
+    template<> Mutex Singleton<T>::sLock(Mutex::PRIVATE); \
+    template<> T* Singleton<T>::sInstance(nullptr);
 
 #endif //_UTILS_SINGLETON_H
