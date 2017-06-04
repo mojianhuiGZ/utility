@@ -3,19 +3,24 @@
 
 #include "config.h"
 #include "utils/Errors.h"
+#include "utils/Timers.h"
 
-#if defined(HAVE_PTHREAD)
+#if defined(HAVE_FEATURE_PTHREAD)
 
 #include <pthread.h>
 
 #endif
 
 namespace utils {
+    /*
+     * Simple mutex.
+     * new code should use std::mutex and std::lock_guard instead.
+     */
     class Mutex {
     public:
         enum {
-            PRIVATE = 0,
-            SHARED = 1
+            PRIVATE = 0,    // 进程内线程互斥锁，不可重入
+            SHARED = 1      // 多进程间线程互斥锁，不可重入
         };
 
         Mutex();
@@ -32,6 +37,8 @@ namespace utils {
 
         status_t tryLock();
 
+        // Manages the mutex automatically. It'll be locked when Autolock is
+        // constructed and released when Autolock goes out of scope.
         class AutoLock {
         public:
             inline explicit AutoLock(Mutex &mutex) : mLock(mutex) { mLock.lock(); }
@@ -47,18 +54,19 @@ namespace utils {
     private:
         friend class Condition;
 
+        // A mutex cannot be copied
         Mutex(const Mutex &);
 
         Mutex &operator=(const Mutex &);
 
-#if defined(HAVE_PTHREAD)
+#if defined(HAVE_FEATURE_PTHREAD)
         pthread_mutex_t mMutex;
 #endif
     };
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if defined(HAVE_PTHREAD)
+#if defined(HAVE_FEATURE_PTHREAD)
 
     inline Mutex::Mutex() {
         pthread_mutex_init(&mMutex, NULL);
@@ -96,6 +104,8 @@ namespace utils {
         return -pthread_mutex_trylock(&mMutex);
     }
 
+#else
+#error Mutex is not implemented in this system!
 #endif
 
     typedef Mutex::AutoLock AutoMutex;

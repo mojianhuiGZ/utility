@@ -1,15 +1,19 @@
 #ifndef _UTILS_CONDITION_H
 #define _UTILS_CONDITION_H
 
+#include "config.h"
 #include "utils/Timers.h"
 #include "utils/Mutex.h"
 
 namespace utils {
+    /*
+     * Condition variable.
+     */
     class Condition {
     public:
         enum {
-            PRIVATE = 0,
-            SHARED = 1
+            PRIVATE = 0,    // 进程内线程条件变量
+            SHARED = 1      // 多进程间线程条件变量
         };
 
         enum WakeUpType {
@@ -40,14 +44,14 @@ namespace utils {
         void broadcast();
 
     private:
-#if defined(HAVE_PTHREAD)
+#if defined(HAVE_FEATURE_PTHREAD)
         pthread_cond_t mCond;
 #endif
     };
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if defined(HAVE_PTHREAD)
+#if defined(HAVE_FEATURE_PTHREAD)
 
     inline Condition::Condition() {
         pthread_cond_init(&mCond, NULL);
@@ -81,6 +85,8 @@ namespace utils {
         pthread_cond_broadcast(&mCond);
     }
 
+#else
+#error Condition is not implemented in this system!
 #endif
 
 }

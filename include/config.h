@@ -1,1 +1,1 @@
-#define HAVE_PTHREAD
+#define HAVE_FEATURE_PTHREAD

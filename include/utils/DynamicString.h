@@ -1,0 +1,8 @@
+//
+// Created by mjh on 17-6-3.
+//
+
+#ifndef UTILITY_DYNAMICSTRING_H
+#define UTILITY_DYNAMICSTRING_H
+
+#endif //UTILITY_DYNAMICSTRING_H

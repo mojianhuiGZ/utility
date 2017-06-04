@@ -1,8 +1,15 @@
-//
-// Created by root on 17-6-1.
-//
+#ifndef _UTILS_PROPERTYMAP_H
+#define _UTILS_PROPERTYMAP_H
 
-#ifndef TTXNET_PROPERTYMAP_H
-#define TTXNET_PROPERTYMAP_H
+namespace utils {
+    class PropertyMap {
+    public:
+        PropertyMap();
+        ~PropertyMap();
+        void clear();
+        void addProperty(const )
 
-#endif //TTXNET_PROPERTYMAP_H
+    };
+}
+
+#endif //_UTILS_PROPERTYMAP_H
