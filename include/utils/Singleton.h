@@ -39,7 +39,7 @@ namespace utils {
 }
 
 #define SINGLETON_STATIC_INSTANCE(T) \
-    template<> Mutex Singleton<T>::sLock(Mutex::PRIVATE); \
+    template<> Mutex Singleton<T>::sLock(nullptr); \
     template<> T* Singleton<T>::sInstance(nullptr);
 
 #endif //_UTILS_SINGLETON_H

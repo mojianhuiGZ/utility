@@ -4,26 +4,20 @@
 #include "config.h"
 #include "utils/Timers.h"
 #include "utils/Mutex.h"
+#include <condition_variable>
+
+using std::condition_variable;
+using std::unique_lock;
 
 namespace utils {
-    /*
-     * Condition variable.
-     */
     class Condition {
     public:
-        enum {
-            PRIVATE = 0,    // 进程内线程条件变量
-            SHARED = 1      // 多进程间线程条件变量
-        };
-
         enum WakeUpType {
             WAKE_UP_ONE = 0,
             WAKE_UP_ALL = 1
         };
 
         Condition();
-
-        Condition(uint32_t type);
 
         ~Condition();
 
@@ -44,50 +38,35 @@ namespace utils {
         void broadcast();
 
     private:
-#if defined(HAVE_FEATURE_PTHREAD)
-        pthread_cond_t mCond;
-#endif
+        Condition(const Condition &) = delete;
+
+        Condition &operator=(const Condition &) = delete;
+
+        condition_variable mCond;
     };
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if defined(HAVE_FEATURE_PTHREAD)
+    inline Condition::Condition() : mCond() {}
 
-    inline Condition::Condition() {
-        pthread_cond_init(&mCond, NULL);
-    }
+    inline Condition::~Condition() {}
 
-    inline Condition::Condition(uint32_t type) {
-        if (type == SHARED) {
-            pthread_condattr_t attr;
-            pthread_condattr_init(&attr);
-            pthread_condattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-            pthread_cond_init(&mCond, &attr);
-            pthread_condattr_destroy(&attr);
-        } else {
-            pthread_cond_init(&mCond, NULL);
+    inline status_t Condition::wait(Mutex &mutex) {
+        unique_lock<std::mutex> lock(mutex.mMutex);
+        try {
+            mCond.wait(lock);
+        } catch (system_error &e) {
+            return -e.code().value();
         }
     }
 
-    inline Condition::~Condition() {
-        pthread_cond_destroy(&mCond);
-    }
-
-    inline status_t Condition::wait(Mutex &mutex) {
-        return -pthread_cond_wait(&mCond, &mutex.mMutex);
-    }
-
     inline void Condition::signal() {
-        pthread_cond_signal(&mCond);
+        mCond.notify_one();
     }
 
     inline void Condition::broadcast() {
-        pthread_cond_broadcast(&mCond);
+        mCond.notify_all();
     }
-
-#else
-#error Condition is not implemented in this system!
-#endif
 
 }
 
