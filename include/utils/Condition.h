@@ -4,10 +4,6 @@
 #include "config.h"
 #include "utils/Timers.h"
 #include "utils/Mutex.h"
-#include <condition_variable>
-
-using std::condition_variable;
-using std::unique_lock;
 
 namespace utils {
     class Condition {
@@ -23,8 +19,6 @@ namespace utils {
 
         status_t wait(Mutex &mutex);
 
-        status_t waitRelative(Mutex &mutex, nsecs_t reltime);
-
         void signal();
 
         void signal(WakeUpType type) {
@@ -38,35 +32,38 @@ namespace utils {
         void broadcast();
 
     private:
-        Condition(const Condition &) = delete;
-
-        Condition &operator=(const Condition &) = delete;
-
-        condition_variable mCond;
+#if defined(HAVE_FEATURE_PTHREAD)
+        pthread_cond_t mCond;
+#endif
     };
 
 ///////////////////////////////////////////////////////////////////////////////
 
-    inline Condition::Condition() : mCond() {}
+#if defined(HAVE_FEATURE_PTHREAD)
 
-    inline Condition::~Condition() {}
+    inline Condition::Condition() {
+        pthread_cond_init(&mCond, NULL);
+    }
+
+    inline Condition::~Condition() {
+        pthread_cond_destroy(&mCond);
+    }
 
     inline status_t Condition::wait(Mutex &mutex) {
-        unique_lock<std::mutex> lock(mutex.mMutex);
-        try {
-            mCond.wait(lock);
-        } catch (system_error &e) {
-            return -e.code().value();
-        }
+        return -pthread_cond_wait(&mCond, &mutex.mMutex);
     }
 
     inline void Condition::signal() {
-        mCond.notify_one();
+        pthread_cond_signal(&mCond);
     }
 
     inline void Condition::broadcast() {
-        mCond.notify_all();
+        pthread_cond_broadcast(&mCond);
     }
+
+#else
+#error Condition is not implemented in this system!
+#endif
 
 }
 

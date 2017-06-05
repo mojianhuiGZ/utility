@@ -3,15 +3,19 @@
 
 #include "config.h"
 #include "utils/Errors.h"
-#include <mutex>
+#include "utils/Timers.h"
 
-using std::mutex;
-using std::system_error;
-using std::errc;
+#if defined(HAVE_FEATURE_PTHREAD)
+
+#include <pthread.h>
+
+#endif
 
 namespace utils {
     class Mutex {
     public:
+        Mutex();
+
         explicit Mutex(const char *name);
 
         ~Mutex();
@@ -20,7 +24,7 @@ namespace utils {
 
         void unlock();
 
-        bool tryLock();
+        status_t tryLock();
 
         // Manages the mutex automatically. It'll be locked when Autolock is
         // constructed and released when Autolock goes out of scope.
@@ -43,32 +47,42 @@ namespace utils {
 
         Mutex &operator=(const Mutex &) = delete;
 
-        mutex mMutex;
+#if defined(HAVE_FEATURE_PTHREAD)
+        pthread_mutex_t mMutex;
+#endif
     };
 
 ///////////////////////////////////////////////////////////////////////////////
 
-    inline Mutex::Mutex(const char *name) : mMutex() {
+#if defined(HAVE_FEATURE_PTHREAD)
+
+    inline Mutex::Mutex() {
+        pthread_mutex_init(&mMutex, NULL);
     }
 
-    inline Mutex::~Mutex() {}
+    inline Mutex::Mutex(__attribute__((unused)) const char *name) {
+        pthread_mutex_init(&mMutex, NULL);
+    }
+
+    inline Mutex::~Mutex() {
+        pthread_mutex_destroy(&mMutex);
+    }
 
     inline status_t Mutex::lock() {
-        try {
-            mMutex.lock();
-            return OK;
-        } catch (system_error &e) {
-            return -e.code().value();
-        }
+        return -pthread_mutex_lock(&mMutex);
     }
 
     inline void Mutex::unlock() {
-        mMutex.unlock();
+        pthread_mutex_unlock(&mMutex);
     }
 
-    inline bool Mutex::tryLock() {
-        return mMutex.try_lock();
+    inline status_t Mutex::tryLock() {
+        return -pthread_mutex_trylock(&mMutex);
     }
+
+#else
+#error Mutex is not implemented in this system!
+#endif
 
     typedef Mutex::AutoLock AutoMutex;
 
