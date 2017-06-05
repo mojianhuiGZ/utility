@@ -37,7 +37,7 @@ include_directories(${GTEST_DIR}/include)
 add_subdirectory(${GTEST_DIR})
 
 include_directories(${INCLUDE_DIR})
-add_library(${PROJECT_NAME} src/utils/Logger.cpp src/utils/Timers.cpp include/utils/DynamicString.h include/utils/String8.h include/utils/RWLock.h include/utils/Unicode.h include/utils/Thread.h include/utils/SocketListener.h include/utils/SocketClient.h src/utils/SocketListener.cpp src/utils/Thread.cpp)
+add_library(${PROJECT_NAME} src/utils/Logger.cpp src/utils/Timers.cpp include/utils/DynamicString.h include/utils/String8.h include/utils/RWLock.h include/utils/Unicode.h include/utils/Thread.h include/utils/SocketListener.h include/utils/SocketClient.h src/utils/SocketListener.cpp src/utils/Thread.cpp src/utils/String8.cpp)
 
 add_executable(UnitTests test/utils/DynamicList_test.cpp test/utils/String_test.cpp
         test/utils/List_test.cpp test/utils/Logger_test.cpp test/utils/Singleton_test.cpp
