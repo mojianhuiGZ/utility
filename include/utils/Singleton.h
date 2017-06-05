@@ -1,45 +1,39 @@
 #ifndef _UTILS_SINGLETON_H
 #define _UTILS_SINGLETON_H
 
-#include "utils/Mutex.h"
-
 namespace utils {
+    /*
+     * Singleton模式
+     * 线程安全无锁
+     */
     template<typename T>
     class Singleton {
     public:
+        // C++11保证多线程同时调用下static只初始化一次
         static T &getInstance() {
-            Mutex::AutoLock _l(sLock);
-            T *instance = sInstance;
-            if (instance == nullptr) {
-                instance = new T();
-                sInstance = instance;
-            }
-            return *instance;
+            static T instance;
+            sInstance = &instance;
+            return instance;
         }
 
         static bool hasInstance() {
-            Mutex::AutoLock _l(sLock);
             return sInstance != nullptr;
         }
 
-    protected:
+    private:
         Singleton() {}
 
         ~Singleton() {}
 
-    private:
+        Singleton(const Singleton &) = delete;
 
-        Singleton(const Singleton &);
+        Singleton &operator=(const Singleton &) = delete;
 
-        Singleton &operator=(const Singleton &);
-
-        static Mutex sLock;
         static T *sInstance;
     };
 }
 
 #define SINGLETON_STATIC_INSTANCE(T) \
-    template<> Mutex Singleton<T>::sLock(nullptr); \
-    template<> T* Singleton<T>::sInstance(nullptr);
+    template<> T* Singleton<T>::sInstance(nullptr)
 
 #endif //_UTILS_SINGLETON_H
